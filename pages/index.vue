@@ -705,7 +705,8 @@ const searchResults = computed(() => {
 .bottom-nav {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
   max-width: 430px;
   height: 70px;
