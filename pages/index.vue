@@ -188,30 +188,7 @@
         </div>
       </div>
 
-      <!-- Bottom Navigation -->
-      <div class="bottom-nav">
-        <div class="nav-item active">
-          <div class="nav-icon">
-            <LayoutGridIcon />
-          </div>
-          <div class="nav-label">Home</div>
-        </div>
-        <div class="nav-item">
-          <div class="nav-icon">
-            <BellIcon />
-          </div>
-        </div>
-        <div class="nav-item">
-          <div class="nav-icon">
-            <CameraIcon />
-          </div>
-        </div>
-        <div class="nav-item">
-          <div class="nav-icon">
-            <UserIcon />
-          </div>
-        </div>
-      </div>
+      <BottomNav />
     </div>
   </div>
 </template>
@@ -237,6 +214,7 @@ import {
   X as XIcon,
 } from 'lucide-vue-next'
 import { computed, nextTick, ref } from 'vue'
+import BottomNav from '../components/BottomNav.vue'
 
 const isMenuOpen = ref(false)
 const isSearchActive = ref(false)
@@ -699,49 +677,6 @@ const searchResults = computed(() => {
 
 .art-arrow {
   margin-left: 10px;
-}
-
-/* Bottom Navigation */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 430px;
-  height: 70px;
-  background-color: #0f1420;
-  border-radius: 20px 20px 0 0;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 0 20px;
-  z-index: 10;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #fff;
-}
-
-.nav-item.active {
-  background-color: #ffd700;
-  color: #0f1420;
-  padding: 8px 20px;
-  border-radius: 20px;
-}
-
-.nav-icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.nav-label {
-  font-size: 12px;
-  margin-top: 4px;
 }
 
 /* Animations */
