@@ -1,67 +1,35 @@
 <template>
   <div
-    class="app-container"
+    class="relative w-full max-w-[430px] h-screen mx-auto bg-[#f2f2f2] overflow-hidden"
     :class="{ 'menu-open': isMenuOpen }"
   >
-    <!-- Sidebar Menu -->
-    <div
-      class="sidebar-menu"
-      :class="{ open: isMenuOpen }"
-    >
-      <div class="sidebar-header">
-        <h2>Menu</h2>
-        <button
-          class="close-btn"
-          @click="toggleMenu"
-        >
-          <XIcon />
-        </button>
-      </div>
-      <div class="sidebar-content">
-        <div class="menu-item">
-          <HomeIcon class="menu-icon" />
-          <span>Home</span>
-        </div>
-        <div class="menu-item">
-          <UsersIcon class="menu-icon" />
-          <span>Artists</span>
-        </div>
-        <div class="menu-item">
-          <ShoppingBagIcon class="menu-icon" />
-          <span>Marketplace</span>
-        </div>
-        <div class="menu-item">
-          <BarChartIcon class="menu-icon" />
-          <span>Analytics</span>
-        </div>
-        <div class="menu-item">
-          <SettingsIcon class="menu-icon" />
-          <span>Settings</span>
-        </div>
-      </div>
-    </div>
+    <!-- Use the Sidebar Menu Component -->
+    <SidebarMenu
+      :is-open="isMenuOpen"
+      @close="toggleMenu"
+    />
 
     <!-- Search Overlay -->
     <div
       v-if="isSearchActive"
-      class="search-overlay"
+      class="fixed top-0 left-0 w-full h-full bg-black/50 z-[200] flex justify-center items-start animate-fadeIn"
       @click="closeSearch"
     >
       <div
-        class="search-container"
+        class="w-full max-w-[430px] bg-[#f2f2f2] rounded-b-[20px] overflow-hidden animate-slideDown"
         @click.stop
       >
-        <div class="search-input-container">
+        <div class="flex items-center bg-white p-4 shadow-sm">
           <input
             ref="searchInput"
             v-model="searchQuery"
             type="text"
-            class="search-input"
+            class="flex-1 border-none outline-none text-base py-2.5 bg-transparent"
             placeholder="Search artists, artworks..."
             @keyup.esc="closeSearch"
           />
           <button
-            class="search-close-btn"
+            class="bg-transparent border-0 cursor-pointer text-gray-500 ml-2.5"
             @click="closeSearch"
           >
             <XIcon size="18" />
@@ -69,28 +37,30 @@
         </div>
         <div
           v-if="searchQuery.length > 0"
-          class="search-results"
+          class="max-h-[60vh] overflow-y-auto py-2.5"
         >
           <div
             v-for="(result, index) in searchResults"
             :key="index"
-            class="search-result-item"
+            class="flex items-center p-4 border-b border-gray-200 bg-white cursor-pointer hover:bg-gray-50 transition-colors animate-scaleUp"
           >
-            <div class="result-icon">
+            <div
+              class="w-10 h-10 rounded-full bg-gray-100 flex justify-center items-center mr-4 overflow-hidden"
+            >
               <img
                 v-if="result.type === 'artist'"
                 :src="result.image"
                 alt="Artist"
-                class="result-image"
+                class="w-full h-full object-cover"
               />
               <PaletteIcon
                 v-else-if="result.type === 'artwork'"
                 size="18"
               />
             </div>
-            <div class="result-details">
-              <div class="result-title">{{ result.title }}</div>
-              <div class="result-subtitle">{{ result.subtitle }}</div>
+            <div class="flex-1">
+              <div class="text-sm font-semibold mb-0.5">{{ result.title }}</div>
+              <div class="text-xs text-gray-500">{{ result.subtitle }}</div>
             </div>
           </div>
         </div>
@@ -98,94 +68,92 @@
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div
+      class="relative w-full h-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] p-5 pb-20"
+    >
       <!-- Header -->
-      <header class="app-header">
+      <header class="flex justify-center items-center relative mb-8">
         <button
-          class="menu-btn"
+          class="absolute left-0 bg-transparent border-0 cursor-pointer"
           @click="toggleMenu"
         >
           <MenuIcon />
         </button>
-        <h1>BEST ARTISTS</h1>
+        <h1 class="text-[22px] font-bold tracking-wider">BEST ARTISTS</h1>
       </header>
 
       <!-- Artists Section -->
-      <div class="artists-section">
-        <div class="artist-item search">
+      <div class="flex gap-5 mb-10 overflow-x-auto pb-2.5 no-scrollbar">
+        <div class="flex flex-col items-center gap-2">
           <div
-            class="artist-avatar search-icon"
+            class="w-[70px] h-[70px] rounded-full overflow-hidden flex justify-center items-center bg-[#0f1420] text-[#ffd700] cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-md active:scale-95"
             @click="activateSearch"
           >
-            <SearchIcon class="icon" />
+            <SearchIcon class="w-6 h-6" />
           </div>
         </div>
         <div
           v-for="artist in artists"
           :key="artist.name"
-          class="artist-item"
+          class="flex flex-col items-center gap-2 animate-fadeIn"
+          :style="`animation-delay: ${artists.indexOf(artist) * 0.1}s`"
         >
-          <div class="artist-avatar">
+          <div class="w-[70px] h-[70px] rounded-full overflow-hidden">
             <img
               :src="artist.avatar"
               :alt="artist.name"
+              class="w-full h-full object-cover"
             />
           </div>
-          <div class="artist-name">{{ artist.name }}</div>
+          <div class="text-sm font-medium">{{ artist.name }}</div>
         </div>
       </div>
 
       <!-- Financial Section -->
-      <div class="financial-section">
-        <h2>DEC 2024</h2>
+      <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-5">DEC 2024</h2>
 
-        <div class="financial-item">
-          <div class="financial-icon profit">
+        <div
+          class="flex items-center mb-4 animate-slideIn"
+          :style="`animation-delay: 0s`"
+        >
+          <div class="w-10 h-10 rounded-full flex justify-center items-center mr-4 bg-white">
             <TrendingUpIcon />
           </div>
-          <div class="financial-label">Profit</div>
-          <div class="financial-value positive">+$2 450</div>
+          <div class="text-base font-medium flex-1">Profit</div>
+          <div class="text-base font-semibold">+$2 450</div>
         </div>
 
-        <div class="financial-item">
-          <div class="financial-icon spending">
+        <div
+          class="flex items-center mb-4 animate-slideIn"
+          :style="`animation-delay: 0.1s`"
+        >
+          <div class="w-10 h-10 rounded-full flex justify-center items-center mr-4 bg-white">
             <TrendingDownIcon />
           </div>
-          <div class="financial-label">Spending</div>
-          <div class="financial-value negative">-$1 280</div>
+          <div class="text-base font-medium flex-1">Spending</div>
+          <div class="text-base font-semibold">-$1 280</div>
         </div>
 
-        <div class="financial-item">
-          <div class="financial-icon balance">
+        <div
+          class="flex items-center mb-4 animate-slideIn"
+          :style="`animation-delay: 0.2s`"
+        >
+          <div class="w-10 h-10 rounded-full flex justify-center items-center mr-4 bg-white">
             <DollarSignIcon />
           </div>
-          <div class="financial-label">Balance</div>
-          <div class="financial-value positive">+$12 650</div>
+          <div class="text-base font-medium flex-1">Balance</div>
+          <div class="text-base font-semibold">+$12 650</div>
         </div>
       </div>
 
       <!-- Art Items -->
-      <div class="art-items">
-        <div
+      <div class="mb-20">
+        <ArtItem
           v-for="item in artItems"
           :key="item.title"
-          class="art-item"
-        >
-          <div class="art-thumbnail">
-            <img
-              :src="item.image"
-              :alt="item.title"
-            />
-          </div>
-          <div class="art-details">
-            <h3>{{ item.title }}</h3>
-            <p>{{ item.description }}</p>
-            <div class="art-price">{{ item.price }}</div>
-          </div>
-          <div class="art-arrow">
-            <ArrowRightIcon />
-          </div>
-        </div>
+          :item="item"
+        />
       </div>
 
       <BottomNav />
@@ -195,26 +163,18 @@
 
 <script setup>
 import {
-  ArrowRight as ArrowRightIcon,
-  BarChart as BarChartIcon,
-  Bell as BellIcon,
-  Camera as CameraIcon,
   DollarSign as DollarSignIcon,
-  Home as HomeIcon,
-  LayoutGrid as LayoutGridIcon,
   Menu as MenuIcon,
   Palette as PaletteIcon,
   Search as SearchIcon,
-  Settings as SettingsIcon,
-  ShoppingBag as ShoppingBagIcon,
   TrendingDown as TrendingDownIcon,
   TrendingUp as TrendingUpIcon,
-  User as UserIcon,
-  Users as UsersIcon,
   X as XIcon,
 } from 'lucide-vue-next'
 import { computed, nextTick, ref } from 'vue'
+import ArtItem from '../components/Art/ArtItem'
 import BottomNav from '../components/BottomNav.vue'
+import SidebarMenu from '../components/SidebarMenu.vue'
 
 const isMenuOpen = ref(false)
 const isSearchActive = ref(false)
@@ -317,176 +277,7 @@ const searchResults = computed(() => {
   font-family: 'Inter', sans-serif;
 }
 
-.app-container {
-  position: relative;
-  width: 100%;
-  max-width: 430px;
-  height: 100vh;
-  margin: 0 auto;
-  background-color: #f2f2f2;
-  overflow: hidden;
-}
-
-/* Sidebar Menu */
-.sidebar-menu {
-  position: fixed;
-  top: 0;
-  left: -80%;
-  width: 80%;
-  height: 100%;
-  background-color: #fff;
-  z-index: 100;
-  padding: 20px;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar-menu.open {
-  transform: translateX(100%);
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-.sidebar-header h2 {
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #000;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  padding: 15px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.menu-icon {
-  margin-right: 15px;
-}
-
-/* Search Overlay */
-.search-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 200;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  animation: fadeIn 0.2s ease forwards;
-}
-
-.search-container {
-  width: 100%;
-  max-width: 430px;
-  background-color: #f2f2f2;
-  border-radius: 0 0 20px 20px;
-  overflow: hidden;
-  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.search-input-container {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  padding: 15px 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.search-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 16px;
-  padding: 10px 0;
-  background: transparent;
-}
-
-.search-close-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #666;
-  margin-left: 10px;
-}
-
-.search-results {
-  max-height: 60vh;
-  overflow-y: auto;
-  padding: 10px 0;
-}
-
-.search-result-item {
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid #eee;
-  background-color: #fff;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.search-result-item:hover {
-  background-color: #f9f9f9;
-}
-
-.result-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 15px;
-  overflow: hidden;
-}
-
-.result-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.result-details {
-  flex: 1;
-}
-
-.result-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 3px;
-}
-
-.result-subtitle {
-  font-size: 12px;
-  color: #666;
-}
-
-/* Main Content */
-.main-content {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 20px;
-  padding-bottom: 80px;
-}
-
+/* Menu open effect for main content */
 .menu-open .main-content {
   transform: translateX(80%);
   border-radius: 20px;
@@ -494,189 +285,9 @@ const searchResults = computed(() => {
   box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
 }
 
-/* Header */
-.app-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  margin-bottom: 30px;
-}
-
-.app-header h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.menu-btn {
-  position: absolute;
-  left: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* Artists Section */
-.artists-section {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 40px;
-  overflow-x: auto;
-  padding-bottom: 10px;
-}
-
-.artists-section::-webkit-scrollbar {
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
   display: none;
-}
-
-.artist-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.artist-avatar {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.artist-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.search-icon {
-  background-color: #0f1420;
-  color: #ffd700;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.search-icon:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.search-icon:active {
-  transform: scale(0.95);
-}
-
-.icon {
-  width: 24px;
-  height: 24px;
-}
-
-.artist-name {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* Financial Section */
-.financial-section {
-  margin-bottom: 30px;
-}
-
-.financial-section h2 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 20px;
-}
-
-.financial-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.financial-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 15px;
-  background-color: #fff;
-}
-
-.financial-label {
-  font-size: 16px;
-  font-weight: 500;
-  flex: 1;
-}
-
-.financial-value {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.positive {
-  color: #000;
-}
-
-.negative {
-  color: #000;
-}
-
-/* Art Items */
-.art-items {
-  margin-bottom: 80px;
-}
-
-.art-item {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border-radius: 15px;
-  padding: 15px;
-  margin-bottom: 15px;
-}
-
-.art-thumbnail {
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-right: 15px;
-}
-
-.art-thumbnail img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.art-details {
-  flex: 1;
-}
-
-.art-details h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-
-.art-details p {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.art-price {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.art-arrow {
-  margin-left: 10px;
 }
 
 /* Animations */
@@ -720,82 +331,19 @@ const searchResults = computed(() => {
   }
 }
 
-.art-item {
+.animate-fadeIn {
   animation: fadeIn 0.5s ease forwards;
 }
 
-.financial-item {
+.animate-slideIn {
   animation: slideIn 0.3s ease forwards;
 }
 
-.financial-item:nth-child(2) {
-  animation-delay: 0.1s;
+.animate-slideDown {
+  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.financial-item:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.artist-item {
-  animation: fadeIn 0.5s ease forwards;
-}
-
-.artist-item:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.artist-item:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.artist-item:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
-.search-result-item {
+.animate-scaleUp {
   animation: scaleUp 0.2s ease forwards;
-}
-
-/* Hover effects */
-.art-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.menu-item:hover {
-  background-color: #f9f9f9;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-/* Sidebar animation */
-.sidebar-menu {
-  transform: translateX(0);
-}
-
-.sidebar-menu.open .menu-item {
-  opacity: 0;
-  animation: slideIn 0.3s ease forwards;
-}
-
-.sidebar-menu.open .menu-item:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.sidebar-menu.open .menu-item:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.sidebar-menu.open .menu-item:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-.sidebar-menu.open .menu-item:nth-child(4) {
-  animation-delay: 0.4s;
-}
-
-.sidebar-menu.open .menu-item:nth-child(5) {
-  animation-delay: 0.5s;
 }
 </style>
