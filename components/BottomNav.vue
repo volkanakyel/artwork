@@ -1,20 +1,24 @@
 <template>
-  <div class="bottom-nav">
+  <div
+    class="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-[430px] h-[70px] bg-[#0f1420] rounded-t-[20px] flex justify-around items-center px-5 z-10"
+  >
     <div
-      v-for="(item, index) in navItems"
+      v-for="item in navItems"
       :key="item.path"
-      class="nav-item"
-      :class="{ active: currentRoute === item.path }"
+      class="flex flex-col items-center text-white transition-all duration-300"
+      :class="{
+        'bg-[#ffd700] text-[#0f1420] px-5 py-2 rounded-[20px]': currentRoute === item.path,
+      }"
     >
       <div
-        class="nav-icon"
+        class="flex justify-center items-center cursor-pointer transition-transform duration-200 active:scale-90"
         @click="navigateTo(item.path)"
       >
         <component :is="item.icon" />
       </div>
       <div
         v-if="item.label"
-        class="nav-label"
+        class="text-xs mt-1"
       >
         {{ item.label }}
       </div>
@@ -22,11 +26,11 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import {
-  LayoutGrid as LayoutGridIcon,
   Bell as BellIcon,
   Camera as CameraIcon,
+  LayoutGrid as LayoutGridIcon,
   User as UserIcon,
 } from 'lucide-vue-next'
 import { computed } from 'vue'
